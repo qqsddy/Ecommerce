@@ -4,6 +4,7 @@ using EcommerceWeb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcommerceWeb.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230630134850_addDescriptionColumnforProudct")]
+    partial class addDescriptionColumnforProudct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,29 +105,6 @@ namespace EcommerceWeb.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("EcommerceWeb.Models.OrderDetail", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<int>("OrderID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PorductID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("OrderID");
-
-                    b.HasIndex("PorductID");
-
-                    b.ToTable("OrderDetails");
-                });
-
             modelBuilder.Entity("EcommerceWeb.Models.Product", b =>
                 {
                     b.Property<int>("ID")
@@ -143,6 +123,9 @@ namespace EcommerceWeb.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
@@ -150,6 +133,8 @@ namespace EcommerceWeb.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("OrderID");
 
                     b.ToTable("Products");
                 });
@@ -176,23 +161,15 @@ namespace EcommerceWeb.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("EcommerceWeb.Models.OrderDetail", b =>
+            modelBuilder.Entity("EcommerceWeb.Models.Product", b =>
                 {
                     b.HasOne("EcommerceWeb.Models.Order", "Order")
-                        .WithMany("OrderDetails")
+                        .WithMany("Products")
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EcommerceWeb.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("PorductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Order");
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("EcommerceWeb.Models.Customer", b =>
@@ -202,7 +179,7 @@ namespace EcommerceWeb.Migrations
 
             modelBuilder.Entity("EcommerceWeb.Models.Order", b =>
                 {
-                    b.Navigation("OrderDetails");
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("EcommerceWeb.Models.Product", b =>

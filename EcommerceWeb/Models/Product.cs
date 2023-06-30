@@ -12,15 +12,15 @@ namespace EcommerceWeb.Models
         public string Name { get; set; }
 
         [Required]
+        [StringLength(255)]
+        public string Description { get; set; }
+
+        [Required]
         public double Price { get; set; }
 
         [Required]
         public int Stock { get; set; }
 
         public ICollection<Category> Categories { get; set; }
-
-        public int OrderID { get; set; }
-        [ForeignKey("OrderID")]
-        public Order Order { get; set; }
     }
 }
