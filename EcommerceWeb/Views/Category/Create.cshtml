@@ -1,0 +1,25 @@
+﻿@model Category
+@{
+    ViewData["Title"] = "Create Category";
+}
+
+<div class="container d-flex justify-content-start mt-2">
+    <form method="post">
+        <div>
+            <h2>Create Category</h2>
+        </div>
+        <div class="form-group">
+            <label asp-for="Name" class="form-label mt-2"></label>
+            <input asp-for="Name" class="form-control" placeholder="Enter category name">
+            <span asp-validation-for="Name"></span>
+        </div>
+        <div class="mt-2">
+            <button class="btn btn-info" type="submit">Create</button>
+            <a class="btn btn-secondary" asp-controller="Category" asp-action="Index">Back to List</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
