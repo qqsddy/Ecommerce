@@ -10,9 +10,5 @@ namespace EcommerceWeb.Models
         [Required]
         public string Name { get; set; }
 
-        public int ProductID { get; set; }
-
-        [ForeignKey("ProductID")]
-        public Product Product { get; set; }
     }
 }
