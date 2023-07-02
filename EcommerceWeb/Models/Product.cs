@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EcommerceWeb.Models
@@ -21,9 +22,11 @@ namespace EcommerceWeb.Models
         [Required]
         public int Stock { get; set; }
 
+        [Required]
+        [DisplayName("Category")]
         public int CategoryID { get; set; }
 
         [ForeignKey("CategoryID")]
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
     }
 }

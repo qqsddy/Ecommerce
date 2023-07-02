@@ -1,0 +1,47 @@
+﻿@model Product
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<div class="container d-flex justify-content-start mt-2">
+    <form method="post">
+        <div>
+            <h2>Create Product</h2>
+        </div>
+        <div class="form-group">
+            <label asp-for="Name" class="form-label mt-2"></label>
+            <input asp-for="Name" class="form-control" placeholder="Enter product name">
+            <span asp-validation-for="Name"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" class="form-label mt-2"></label>
+            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter Description..."></textarea>
+            <span asp-validation-for="Description"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Price" class="form-label mt-2"></label>
+            <input asp-for="Price" class="form-control" placeholder="Enter category name">
+            <span asp-validation-for="Price"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Stock" class="form-label mt-2"></label>
+            <input asp-for="Stock" class="form-control" placeholder="Enter category name">
+            <span asp-validation-for="Stock"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="CategoryID" class="form-label mt-2"></label>
+            <select class="form-control" asp-for="CategoryID" asp-items="ViewBag.Categories">
+                <option value="">Select a category</option>
+            </select>
+            <span asp-validation-for="CategoryID"></span>
+        </div>
+        <div class="mt-2">
+            <button class="btn btn-info" type="submit">Create</button>
+            <a class="btn btn-secondary" asp-controller="Product" asp-action="Index">Back to List</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

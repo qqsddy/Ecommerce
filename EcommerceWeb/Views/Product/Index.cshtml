@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-info" asp-controller="Product" asp-action="Create">Create New Product</a>
+    </div>
+    <div>
+        <table class="table table-hover">
+            <theard>
+                <tr class ="table-light">
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Category</th>
+                    <th scope="col"></th>
+                </tr>
+            </theard>
+            <tbody>
+                @foreach(var product in Model)
+                {
+                    <tr>
+                        <th scope="row">@product.ID</th>
+                        <td>@product.Name</td>
+                        <td>@product.Description</td>
+                        <td>@product.Price</td>
+                        <td>@product.Stock</td>
+                        <td>@product.Category.Name</td>
+                        <td class="d-flex justify-content-end">
+                            <a class="btn btn-primary me-2" asp-controller="Product" asp-action="Edit" asp-route-id="@product.ID">Edit</a>
+                            <a class="btn btn-danger" asp-controller="Product" asp-action="Delete" asp-route-id="@product.ID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
