@@ -1,20 +1,11 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace EcommerceWeb.Models
 {
-    public class Customer
+    public class User : IdentityUser
     {
-        public int ID { get; set; }
-
-        [Required]
-        [StringLength(50, ErrorMessage = "Username cannot be longer then 50 characters.")]
-        public string Username { get; set; }
-
-        [Required]
-        [StringLength(50)]
-        public string Password { get; set; }
-
         [Required]
         [StringLength(50)]
         [DisplayName("First Name")]

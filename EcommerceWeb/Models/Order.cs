@@ -13,10 +13,10 @@ namespace EcommerceWeb.Models
         [Required]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        public int CustomerID { get; set; }
+        public string UserID { get; set; }
 
-        [ForeignKey("CustomerID")]
-        public Customer Customer { get; set; }
+        [ForeignKey("UserID")]
+        public User User { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }

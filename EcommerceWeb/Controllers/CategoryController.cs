@@ -1,9 +1,11 @@
 ﻿using EcommerceWeb.Data;
 using EcommerceWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceWeb.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _db;

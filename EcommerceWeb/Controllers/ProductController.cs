@@ -1,6 +1,7 @@
 ﻿
 using EcommerceWeb.Data;
 using EcommerceWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -10,6 +11,7 @@ using System.Diagnostics;
 
 namespace EcommerceWeb.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _db;
