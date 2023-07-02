@@ -16,6 +16,8 @@ namespace EcommerceWeb.Models
         [StringLength(255)]
         public string Description { get; set; }
 
+        public byte[] Image { get; set; }
+
         [Required]
         public double Price { get; set; }
 
