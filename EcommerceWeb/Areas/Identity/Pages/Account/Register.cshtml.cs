@@ -102,11 +102,6 @@ namespace EcommerceWeb.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            [Required]
-            [DataType(DataType.Text)]
-            [Display(Name = "Username")]
-            public string UserName { get; set; }
-
             [DataType(DataType.Text)]
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
@@ -140,7 +135,6 @@ namespace EcommerceWeb.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                user.UserName = Input.UserName;
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;             
                 
