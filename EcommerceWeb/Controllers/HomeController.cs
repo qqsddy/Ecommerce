@@ -2,6 +2,7 @@
 using EcommerceWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace EcommerceWeb.Controllers
 {
@@ -18,6 +19,14 @@ namespace EcommerceWeb.Controllers
 
         public IActionResult Index()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var identity = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            if(identity != null)
+            {
+                HttpContext.Session.SetInt32("shoppingCart", _db.Carts.Where(c => c.UserID == identity.Value).Count());
+
+            }
             IEnumerable<Product> productList = _db.Products;
             return View(productList);
         }

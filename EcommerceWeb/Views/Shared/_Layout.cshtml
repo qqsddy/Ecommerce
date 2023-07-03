@@ -36,10 +36,20 @@
                         }                        
                     </ul>
                     <partial name="_LoginPartial" />
-                    <a class="ms-2 btn btn-outline-dark" asp-controller="Cart" asp-action="Index">
-                        <i class="fas fa-shopping-cart me-1"></i>
-                        Cart
-                    </a>
+                    @if (HttpContextAccessor.HttpContext.Session.GetInt32("shoppingCart") != null && HttpContextAccessor.HttpContext.Session.GetInt32("shoppingCart") > 0)
+                    {
+                        <a class="ms-2 btn btn-outline-dark" asp-controller="Cart" asp-action="Index">
+                            <i class="fas fa-shopping-cart me-1"></i>
+                            Cart&nbsp;(@HttpContextAccessor.HttpContext.Session.GetInt32("shoppingCart"))
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="ms-2 btn btn-outline-dark" asp-controller="Cart" asp-action="Index">
+                            <i class="fas fa-shopping-cart me-1"></i>
+                            Cart
+                        </a>
+                    }
                 </div>
             </div>
         </nav>

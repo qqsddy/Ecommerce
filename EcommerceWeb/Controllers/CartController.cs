@@ -1,6 +1,7 @@
 ﻿using EcommerceWeb.Data;
 using EcommerceWeb.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
@@ -72,9 +73,10 @@ namespace EcommerceWeb.Controllers
                 };
                 _db.Carts.Add(cart);
                 _db.SaveChanges();
+                HttpContext.Session.SetInt32("shoppingCart", _db.Carts.Where(c => c.UserID == userId).Count());
             }
-            
-            return NoContent();
+
+            return RedirectToAction("Index", "Home");
         }
 
         //Get
@@ -91,9 +93,11 @@ namespace EcommerceWeb.Controllers
             {
                 return NotFound();
             }
+            HttpContext.Session.SetInt32("shoppingCart", _db.Carts.Where(c => c.UserID == cart.UserID).Count() - 1);
+
             _db.Carts.Remove(cart);
             _db.SaveChanges();
-       
+            
             return RedirectToAction("Index");
         }
 
