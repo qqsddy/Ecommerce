@@ -13,10 +13,13 @@
                     <h6 class="card-subtitle mb-2 text-muted">$@product.Price</h6>
                     <p class="card-text">@product.Description</p>
                     <h6></h6>
-                    <button type="button" class="btn btn-info" fdprocessedid="jaejsg">Add to Cart</button>
+                    <button type="button" class="btn btn-info" asp-controller="Cart" asp-action="Create" asp-route-Id="@product.ID">
+                        Add to Cart
+                    </button>
                 </div>
             </div>
         </div>
         
     }
 </div>
+
