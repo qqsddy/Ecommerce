@@ -1,0 +1,72 @@
+﻿@model CartOrderViewModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container mt-2">
+    <form method="post">
+        <div class="row">
+            <div class="col">
+                <h4>Shipping Detail</h4>
+                <div class="form-group">
+                    <label asp-for="Order.Name" class="form-label mt-2"></label>
+                    <input asp-for="Order.Name" class="form-control" placeholder="">
+                    <span asp-validation-for="Order.Name"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Order.Phone" class="form-label mt-2"></label>
+                    <input asp-for="Order.Phone" class="form-control" placeholder="">
+                    <span asp-validation-for="Order.Phone"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Order.Address" class="form-label mt-2"></label>
+                    <input asp-for="Order.Address" class="form-control" placeholder="">
+                    <span asp-validation-for="Order.Address"></span>
+                </div>
+            </div>
+            <div class="col">
+                <h4>Order Summary</h4>
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col d-flex justify-content-start">
+                                Product Name
+                            </div>
+                            <div class="col d-flex justify-content-end">
+                                Subtotal
+                            </div>
+                        </div>
+                        @foreach (var cart in Model.Carts)
+                        {
+                            <div class="row">
+                                <div class="col d-flex justify-content-start">
+                                    @cart.Product.Name
+                                </div>
+                                <div class="col d-flex justify-content-end">
+                                    @cart.Subtotal
+                                </div>
+                            </div>
+                        }
+                    </div>                    
+                    <div class="card-footer text-muted">
+                        <div class="row">
+                            <div class="col d-flex justify-content-start">
+                                Total
+                            </div>
+                            <div class="col d-flex justify-content-end">
+                                <h5>@ViewBag.Total</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+        <div class="mt-2 d-flex justify-content-end">
+            <button class="btn btn-info col-3" type="submit" asp-controller="Order" asp-action="ConfirmedOrder">Buy Now</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
