@@ -8,6 +8,12 @@ namespace EcommerceWeb.Models
 
         public int ProductID { get; set; }
 
+        public int Quantity { get; set; }
+
+        [Column(TypeName = "decimal(18, 2)")]
+        [NotMapped]
+        public decimal Subtotal => Product.Price * Quantity;
+
         [ForeignKey("ProductID")]
         public Product Product { get; set; }
 

@@ -1,0 +1,37 @@
+﻿@model List<Cart>
+@{
+    ViewData["Title"] = "Carts";
+}
+
+<div class="container">
+    <div>
+        <table class="table table-hover">
+            <theard>
+                <tr class="table-light">
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Product Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Subtotal</th>
+                    <th scope="col"></th>
+                </tr>
+            </theard>
+            <tbody>
+                @foreach (var cart in Model)
+                {
+                    <tr>
+                        <th scope="row">@cart.Product.Name</th>
+                        <td>@cart.Product.Price</td>
+                        <td>@cart.Quantity</td>
+                        <td>@cart.Subtotal</td>
+                        <td class="d-flex justify-content-end">
+                            <a class="btn btn-danger" asp-controller="Cart" asp-action="Delete" asp-route-cartID="@cart.ID">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-end">            
+            <h3>$@ViewBag.Total</h3>
+        </div>
+    </div>
+</div>

@@ -3,6 +3,9 @@ using EcommerceWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace EcommerceWeb.Controllers
@@ -17,26 +20,31 @@ namespace EcommerceWeb.Controllers
         }
         public IActionResult Index()
         {
-            IEnumerable<Cart> CartList = _db.Carts;
-            return View(CartList);
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            List<Cart> cartFromDb = _db.Carts
+                .Include(c => c.Product)
+                .Where(c => c.UserID == userId)
+                .ToList();
+
+            decimal total = cartFromDb.Sum(c => c.Subtotal);
+
+            ViewBag.Total = total;
+
+            return View(cartFromDb);
         }
 
-        // Get
-        public IActionResult Create() { 
-            return View(); 
-        }
-
-        //Post
-        [HttpPost]
-        [ValidateAntiForgeryToken]  // For csrf token
-        public IActionResult Create(int? productID)
+        //Get
+        public IActionResult AddtoCart(int? productID)
         {
+            
             if (productID == null || productID == 0)
             {
                 return NotFound();
             }
             var product = _db.Products.Find(productID);
-
+            
             if (product == null)
             {
                 return NotFound();
@@ -45,17 +53,48 @@ namespace EcommerceWeb.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            Cart cart = new Cart()
+            Cart cartFromDb = _db.Carts.FirstOrDefault(c => c.UserID == userId && c.ProductID == productID);
+
+            if (cartFromDb != null)
             {
-                Product = product,
-                UserID = userId
+                cartFromDb.Quantity++;
+                _db.Carts.Update(cartFromDb);
+                _db.SaveChanges();
+            }
+            else
+            {
+                Cart cart = new Cart()
+                {
+                    Product = product,
+                    UserID = userId,
+                    Quantity = 1
 
-            };
+                };
+                _db.Carts.Add(cart);
+                _db.SaveChanges();
+            }
+            
+            return NoContent();
+        }
 
-            _db.Carts.Add(cart);
+        //Get
+        public IActionResult Delete(int? cartID)
+        {
+
+            if (cartID == null || cartID == 0)
+            {
+                return NotFound();
+            }
+            var cart = _db.Carts.Find(cartID);
+
+            if (cart == null)
+            {
+                return NotFound();
+            }
+            _db.Carts.Remove(cart);
             _db.SaveChanges();
-
-            return RedirectToAction("Index", "HomeController");
+       
+            return RedirectToAction("Index");
         }
 
     }
