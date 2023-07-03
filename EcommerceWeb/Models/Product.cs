@@ -29,5 +29,8 @@ namespace EcommerceWeb.Models
 
         [ForeignKey("CategoryID")]
         public Category? Category { get; set; }
+
+        [DisplayName("Image")]
+        public string? ImageUrl { get; set; }    
     }
 }

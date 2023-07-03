@@ -15,10 +15,13 @@ namespace EcommerceWeb.Controllers
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public ProductController(ApplicationDbContext db)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _db = db;
+            _webHostEnvironment = webHostEnvironment;
         }
+
         public IActionResult Index()
         {
             IEnumerable<Product> Products = _db.Products
@@ -36,10 +39,24 @@ namespace EcommerceWeb.Controllers
         //Post
         [HttpPost]
         [ValidateAntiForgeryToken]  // For csrf token
-        public IActionResult Create(Product product)
+        public IActionResult Create(Product product, IFormFile? image)
         {
             if (ModelState.IsValid)
             {
+                string wwwrootPath = _webHostEnvironment.WebRootPath;
+                if (image != null)
+                {
+                    string imageName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                    string productPath = Path.Combine(wwwrootPath, @"image\product");
+
+                    using (var fileStream = new FileStream(Path.Combine(productPath, imageName), FileMode.Create))
+                    {
+                        image.CopyTo(fileStream);
+                    }
+
+                    product.ImageUrl = @"\image\product\" + imageName;
+                }
+
                 _db.Products.Add(product);
                 _db.SaveChanges();
                 TempData["success"] = "Proudct created successfully";
@@ -53,7 +70,7 @@ namespace EcommerceWeb.Controllers
         // Get
         public IActionResult Edit(int? id)
         {
-            if (id == null || id == 0)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -70,10 +87,34 @@ namespace EcommerceWeb.Controllers
         //Post
         [HttpPost]
         [ValidateAntiForgeryToken]  // For csrf token
-        public IActionResult Edit(Product product)
+        public IActionResult Edit(Product product, IFormFile? image)
         {
             if (ModelState.IsValid)
             {
+                string wwwrootPath = _webHostEnvironment.WebRootPath;
+                if (image != null)
+                {
+                    string imageName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                    string productPath = Path.Combine(wwwrootPath, @"image\product");
+
+                    if (!string.IsNullOrEmpty(product.ImageUrl))
+                    {
+                        var oldImagePath = Path.Combine(wwwrootPath, product.ImageUrl.TrimStart('\\'));
+
+                        if (System.IO.File.Exists(oldImagePath))
+                        {
+                            System.IO.File.Delete(oldImagePath);
+                        }
+                    }
+
+                    using (var fileStream = new FileStream(Path.Combine(productPath, imageName), FileMode.Create))
+                    {
+                        image.CopyTo(fileStream);
+                    }
+
+                    product.ImageUrl = @"\image\product\" + imageName;
+                }
+
                 _db.Products.Update(product);
                 _db.SaveChanges();
                 TempData["success"] = "Proudct updated successfully";
@@ -87,7 +128,7 @@ namespace EcommerceWeb.Controllers
         // Get
         public IActionResult Delete(int? id)
         {
-            if (id == null || id == 0)
+            if (id == null)
             {
                 return NotFound();
             }

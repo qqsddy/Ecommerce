@@ -4,7 +4,7 @@
 }
 
 <div class="container d-flex justify-content-start mt-2">
-    <form method="post" asp-action="Edit">
+    <form method="post" asp-action="Edit" enctype="multipart/form-data">
         <div>
             <h2>Edit Product</h2>
         </div>
@@ -17,6 +17,14 @@
             <label asp-for="Description" class="form-label mt-2"></label>
             <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter Description..."></textarea>
             <span asp-validation-for="Description"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ImageUrl" class="form-label mt-2"></label>
+            <input type="file" name="image" class="form-control">
+            <input asp-for="ImageUrl" hidden />
+        </div>
+        <div class="m-2">
+            <img src="@Model.ImageUrl" width="30%" />
         </div>
         <div class="form-group">
             <label asp-for="Price" class="form-label mt-2"></label>
