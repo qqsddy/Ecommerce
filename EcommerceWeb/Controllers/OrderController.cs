@@ -139,6 +139,36 @@ namespace EcommerceWeb.Controllers
         }
 
         /// <summary>
+        /// Displays the list of orders for administrators.
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Index()
+        {
+            IEnumerable<Order> orders = await _db.Orders
+               .Include(o => o.OrderDetails)
+               .ToListAsync();
+
+            return View(orders);
+        }
+
+        /// <summary>
+        /// Displays the list of orders for current customer.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Customer()
+        {
+            string userID = GetUserId();
+
+            List<Order> orders = await _db.Orders
+               .Include(o => o.OrderDetails).ThenInclude(od => od.Product)
+               .Where(o => o.UserID == userID)
+               .ToListAsync();
+
+            return View(orders);
+        }
+
+        /// <summary>
         /// Retrieves the ID of the current user.
         /// </summary>
         private string GetUserId()

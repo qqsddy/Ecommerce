@@ -145,7 +145,8 @@ namespace EcommerceWeb.Controllers
         /// If the category is found, removes it from the database and redirects to the "Index" action.
         /// If the category is not found, returns a "Not Found" page.
         /// </returns>
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
+        [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePost(int? id)
         {

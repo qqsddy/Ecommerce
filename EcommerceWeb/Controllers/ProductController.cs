@@ -120,9 +120,19 @@ namespace EcommerceWeb.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existingProduct = await _db.Products.FindAsync(product.ID);
+
+                if (existingProduct == null)
+                {
+                    return NotFound();
+                }
+
                 await HandleImageUpload(product, image);
 
-                _db.Products.Update(product);
+                // Copy the edited properties to the existing product entity
+                _db.Entry(existingProduct).CurrentValues.SetValues(product);
+
+                _db.Products.Update(existingProduct);
                 await _db.SaveChangesAsync();
                 //TempData["success"] = "Proudct updated successfully";
 
@@ -179,7 +189,7 @@ namespace EcommerceWeb.Controllers
             }
 
             _db.Products.Remove(product);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             //TempData["success"] = "Product deleted successfully";
 
             return RedirectToAction("Index");

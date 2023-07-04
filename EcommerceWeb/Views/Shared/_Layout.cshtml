@@ -32,9 +32,16 @@
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" asp-controller="Category" asp-action="Index">Category</a>
                                     <a class="dropdown-item" asp-controller="Product" asp-action="Index">Product</a>
+                                    <a class="dropdown-item" asp-controller="Order" asp-action="Index">Order</a>
                                 </div>
                             </li>
-                        }                        
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Order" asp-action="Customer">Order</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                     @if (HttpContextAccessor.HttpContext.Session.GetInt32("shoppingCart") != null && HttpContextAccessor.HttpContext.Session.GetInt32("shoppingCart") > 0)
