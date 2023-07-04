@@ -2,6 +2,7 @@
 using EcommerceWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceWeb.Controllers
 {
@@ -13,85 +14,142 @@ namespace EcommerceWeb.Controllers
         {
             _db = db;
         }
-        public IActionResult Index()
+
+        /// GET: Category
+        /// <summary>
+        /// Displays a list of categories for the admin to manage.
+        /// </summary>
+        public async Task<IActionResult> Index()
         {
-            IEnumerable<Category> categoryList = _db.Categories;
-            return View(categoryList);
+            IEnumerable<Category> categories = await _db.Categories.ToListAsync();
+
+            return View(categories);
         }
 
-        // Get
-        public IActionResult Create() { return View(); }
+        /// GET: Category/Create
+        /// <summary>
+        /// Displays the category creation form.
+        /// </summary>
+        public IActionResult Create() 
+        { 
+            return View(); 
+        }
 
-        //Post
+        /// POST: Category/Create
+        /// <summary>
+        /// Handles the HTTP POST request to create a new category.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns>
+        /// If the model state is valid and the category is successfully created, redirects to the category list page.
+        /// Otherwise, redisplays the category creation form with validation errors.
+        /// </returns>
         [HttpPost]
-        [ValidateAntiForgeryToken]  // For csrf token
-        public IActionResult Create(Category category)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Category category)
         {
             if(ModelState.IsValid)
             {
                 _db.Categories.Add(category);
-                _db.SaveChanges();
-                TempData["success"] = "Category created successfully";
+                await _db.SaveChangesAsync();
+                //TempData["success"] = "Category created successfully";
 
                 return RedirectToAction("Index");
             }
+
             return View(category);
         }
 
-        // Get
-        public IActionResult Edit(int? id) 
+        /// GET: Category/Edit
+        /// <summary>
+        /// Displays the category edit form.
+        /// </summary>
+        /// <param name="categoryID"></param>
+        /// <returns>
+        /// If the category ID is null or the category is not found, returns a "Not Found" response.
+        /// Otherwise, displays the edit form for the specified category.
+        /// </returns>
+        public async Task<IActionResult> Edit(int? categoryID) 
         {
-            if (id == null || id == 0)
+            if (categoryID == null)
             {
                 return NotFound();
             }
-            var category = _db.Categories.Find(id);
+            var category = await _db.Categories.FindAsync(categoryID);
 
             if (category == null)
             {
                 return NotFound();
             }
+
             return View(category);
         }
 
-        //Post
+        /// POST: Category/Edit
+        /// <summary>
+        /// Handles the HTTP POST request to update a category.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns>
+        /// If the model state is valid, updates the category in the database.
+        /// Redirects to the "Index" action if the update is successful.
+        /// If the model state is invalid, returns the edit view with the current category and validation errors.
+        /// </returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Category category)
+        public async Task<IActionResult> Edit(Category category)
         {
             if (ModelState.IsValid)
             {
                 _db.Categories.Update(category);
-                _db.SaveChanges();
-                TempData["success"] = "Category updated successfully";
+                await _db.SaveChangesAsync();
+                //TempData["success"] = "Category updated successfully";
 
                 return RedirectToAction("Index");
             }
+
             return View(category);
         }
 
-        //Get
-        public IActionResult Delete(int? id)
+        /// GET: Category/Delete
+        /// <summary>
+        /// Displays the delete confirmation page for a category.
+        /// </summary>
+        /// <param name="categoryID"></param>
+        /// <returns>
+        /// If the category ID is null or the category is not found, returns a "Not Found" page.
+        /// Otherwise, retrieves the category from the database and displays the delete confirmation view.
+        /// </returns>
+        public async Task<IActionResult> Delete(int? categoryID)
         {
-            if (id == null || id == 0)
+            if (categoryID == null)
             {
                 return NotFound();
             }
-            var category = _db.Categories.Find(id);
+            var category = await _db.Categories.FindAsync(categoryID);
 
             if (category == null)
             {
                 return NotFound();
             }
+
             return View(category);
         }
 
-        //POST
+        /// POST: Category/Delete
+        /// <summary>
+        /// Handles the HTTP POST request to delete a category.
+        /// </summary>
+        /// <param name="categoryID"></param>
+        /// <returns>
+        /// If the category is found, removes it from the database and redirects to the "Index" action.
+        /// If the category is not found, returns a "Not Found" page.
+        /// </returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeletePost(int? id)
+        public async Task<IActionResult> DeletePost(int? categoryID)
         {
-            var category = _db.Categories.Find(id);
+            var category = await _db.Categories.FindAsync(categoryID);
 
             if (category == null)
             {
@@ -99,11 +157,10 @@ namespace EcommerceWeb.Controllers
             }
 
             _db.Categories.Remove(category);
-            _db.SaveChanges();
-            TempData["success"] = "Category deleted successfully";
+            await _db.SaveChangesAsync();
+            //TempData["success"] = "Category deleted successfully";
+            
             return RedirectToAction("Index");
         }
-
-
     }
 }
