@@ -15,91 +15,113 @@ namespace EcommerceWeb.Controllers
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _db;
+
         public CartController(ApplicationDbContext db)
         {
             _db = db;
         }
-        public IActionResult Index()
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            List<Cart> cartFromDb = _db.Carts
+        /// <summary>
+        /// Retrieves the cart items for the current user and calculates the total.
+        /// </summary>
+        /// <returns>The cart view with the cart items and total.</returns>
+        public async Task<IActionResult> Index()
+        {
+            string userID = GetUserId();
+
+            List<Cart> cartFromDb = await _db.Carts
                 .Include(c => c.Product)
-                .Where(c => c.UserID == userId)
-                .ToList();
+                .Where(c => c.UserID == userID)
+                .ToListAsync();
 
             decimal total = cartFromDb.Sum(c => c.Subtotal);
-
             ViewBag.Total = total;
 
             return View(cartFromDb);
         }
 
-        //Get
-        public IActionResult AddtoCart(int? productID)
+        /// <summary>
+        /// Adds a product to the cart for the current user.
+        /// </summary>
+        /// <param name="productID"></param>
+        /// <returns>Redirects to the home page.</returns>
+        public async Task<IActionResult> AddtoCart(int? productID)
         {
             
-            if (productID == null || productID == 0)
+            if (productID == null)
             {
                 return NotFound();
             }
-            var product = _db.Products.Find(productID);
+            var product = await _db.Products.FindAsync(productID);
             
             if (product == null)
             {
                 return NotFound();
             }
 
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string userID = GetUserId();
 
-            Cart cartFromDb = _db.Carts.FirstOrDefault(c => c.UserID == userId && c.ProductID == productID);
+            // Check if the product already exists in the cart
+            Cart cartFromDb = await _db.Carts.SingleOrDefaultAsync(c => c.UserID == userID && c.ProductID == productID);
 
             if (cartFromDb != null)
             {
                 cartFromDb.Quantity++;
                 _db.Carts.Update(cartFromDb);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
             else
             {
+                // Create a new cart item for the product
                 Cart cart = new Cart()
                 {
                     Product = product,
-                    UserID = userId,
+                    UserID = userID,
                     Quantity = 1
 
                 };
                 _db.Carts.Add(cart);
-                _db.SaveChanges();
-                HttpContext.Session.SetInt32("shoppingCart", _db.Carts.Where(c => c.UserID == userId).Count());
+                await _db.SaveChangesAsync();
+
+                HttpContext.Session.SetInt32("shoppingCart", await _db.Carts.Where(c => c.UserID == userID).CountAsync());
             }
 
             return RedirectToAction("Index", "Home");
         }
 
-        //Get
-        public IActionResult Delete(int? cartID)
+        /// <summary>
+        /// Removes a cart item for the current user.
+        /// </summary>
+        /// <param name="cartID"></param>
+        /// <returns>Redirects to the cart page.</returns>
+        public async Task<IActionResult> Delete(int? cartID)
         {
 
-            if (cartID == null || cartID == 0)
+            if (cartID == null)
             {
                 return NotFound();
             }
-            var cart = _db.Carts.Find(cartID);
+            var cart = await _db.Carts.FindAsync(cartID);
 
             if (cart == null)
             {
                 return NotFound();
             }
-            HttpContext.Session.SetInt32("shoppingCart", _db.Carts.Where(c => c.UserID == cart.UserID).Count() - 1);
+            HttpContext.Session.SetInt32("shoppingCart", await _db.Carts.Where(c => c.UserID == cart.UserID).CountAsync() - 1);
 
             _db.Carts.Remove(cart);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             
             return RedirectToAction("Index");
         }
 
+        /// <summary>
+        /// Retrieves the ID of the current user.
+        /// </summary>
+        private string GetUserId()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            return claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+        }
     }
 }

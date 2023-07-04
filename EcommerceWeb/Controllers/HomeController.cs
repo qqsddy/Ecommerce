@@ -25,7 +25,6 @@ namespace EcommerceWeb.Controllers
             if(identity != null)
             {
                 HttpContext.Session.SetInt32("shoppingCart", _db.Carts.Where(c => c.UserID == identity.Value).Count());
-
             }
             IEnumerable<Product> productList = _db.Products;
             return View(productList);
