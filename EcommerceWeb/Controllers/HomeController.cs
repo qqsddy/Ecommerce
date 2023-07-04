@@ -18,7 +18,7 @@ namespace EcommerceWeb.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string productName)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var identity = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -27,8 +27,24 @@ namespace EcommerceWeb.Controllers
             {
                 HttpContext.Session.SetInt32("shoppingCart", await _db.Carts.Where(c => c.UserID == identity.Value).CountAsync());
             }
-            IEnumerable<Product> productList = _db.Products;
-            return View(productList);
+
+            IEnumerable<Product> products;
+
+            if (!string.IsNullOrEmpty(productName))
+            {
+                products = await _db.Products
+                    .Include(p => p.Category)
+                    .Where(p => p.Name.Contains(productName))
+                    .ToListAsync();
+            }
+            else
+            {
+                products = await _db.Products.
+                    Include(p => p.Category)
+                    .ToListAsync();
+            }
+
+            return View(products);
         }
 
         public IActionResult Privacy()

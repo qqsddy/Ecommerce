@@ -4,8 +4,18 @@
 }
 
 <div class="container">
-    <div class="d-flex justify-content-end mb-3">
+    <div class="mb-3 row">
+        <div class="col d-flex justify-content-start">
+            <form asp-controller="Product" asp-action="Index" method="get">
+                <div class="input-group">
+                    <input type="text" class="form-control " name="productName" placeholder="Search product name" aria-describedby="button-addon2">
+                    <button class="btn btn-primary mb-2" type="submit" id="button-addon2">Search</button>
+                </div>
+            </form>
+        </div>
+        <div class="col d-flex justify-content-end mb-2">
             <a class="btn btn-info" asp-controller="Product" asp-action="Create">Create New Product</a>
+        </div> 
     </div>
     <div>
         <table class="table table-hover">

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 
@@ -27,11 +28,23 @@ namespace EcommerceWeb.Controllers
         /// <summary>
         /// Displays a list of products for the admin to manage.
         /// </summary>
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string productName)
         {
-            IEnumerable<Product> products = await _db.Products
-                .Include(p => p.Category)
-                .ToListAsync();
+            IEnumerable<Product> products;
+
+            if (!string.IsNullOrEmpty(productName))
+            {
+                products = await _db.Products
+                    .Include(p => p.Category)
+                    .Where(p => p.Name.Contains(productName))
+                    .ToListAsync();
+            }
+            else
+            {
+                products = await _db.Products.
+                    Include(p => p.Category)
+                    .ToListAsync();
+            }
 
             return View(products);
         }
