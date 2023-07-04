@@ -23,8 +23,8 @@
                         <th scope="row">@category.ID</th>
                         <td>@category.Name</td>
                         <td class="d-flex justify-content-end">
-                            <a class="btn btn-primary me-2" asp-controller="Category" asp-action="Edit" asp-route-categoryID="@category.ID">Edit</a>
-                            <a class="btn btn-danger" asp-controller="Category" asp-action="Delete" asp-route-categoryID="@category.ID">Delete</a>
+                            <a class="btn btn-primary me-2" asp-controller="Category" asp-action="Edit" asp-route-id="@category.ID">Edit</a>
+                            <a class="btn btn-danger" asp-controller="Category" asp-action="Delete" asp-route-id="@category.ID">Delete</a>
                         </td>
                     </tr>
                 }

@@ -81,18 +81,18 @@ namespace EcommerceWeb.Controllers
         /// <summary>
         /// Handles the HTTP GET request to display the edit form for a product.
         /// </summary>
-        /// <param name="productID"></param>
+        /// <param name="id">ProductID</param>
         /// <returns>
         /// If the product ID is null or the product is not found, returns a "Not Found" response.
         /// Otherwise, displays the edit form for the specified product.
         /// </returns>
-        public async Task<IActionResult> Edit(int? productID)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (productID == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var product = await _db.Products.FindAsync(productID);
+            var product = await _db.Products.FindAsync(id);
 
             if (product == null)
             {
@@ -138,17 +138,17 @@ namespace EcommerceWeb.Controllers
         /// <summary>
         /// Displays the delete confirmation page for a product.
         /// </summary>
-        /// <param name="productID"></param>
+        /// <param name="id">productID</param>
         /// <returns>
         /// If the productID is null or the product is not found, returns a "Not Found" page.
         /// Otherwise, retrieves the product from the database and displays the delete confirmation view.</returns>
-        public async Task<IActionResult> Delete(int? productID)
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (productID == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var product = await _db.Products.FindAsync(productID);
+            var product = await _db.Products.FindAsync(id);
 
             if (product == null)
             {
@@ -162,16 +162,16 @@ namespace EcommerceWeb.Controllers
         /// <summary>
         /// Handles the HTTP POST request to delete a product.
         /// </summary>
-        /// <param name="productID"></param>
+        /// <param name="id"></param>
         /// <returns>
         /// If the product is found, removes it from the database and redirects to the "Index" action.
         /// If the product is not found, returns a "Not Found" page.
         /// </returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]  // For csrf token
-        public async Task<IActionResult> DeletePost(int? productID)
+        public async Task<IActionResult> DeletePost(int? id)
         {
-            var product = await _db.Products.FindAsync(productID);
+            var product = await _db.Products.FindAsync(id);
 
             if (product == null)
             {
