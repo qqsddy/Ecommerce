@@ -1,6 +1,7 @@
 ﻿using EcommerceWeb.Data;
 using EcommerceWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -17,14 +18,14 @@ namespace EcommerceWeb.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var identity = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             if(identity != null)
             {
-                HttpContext.Session.SetInt32("shoppingCart", _db.Carts.Where(c => c.UserID == identity.Value).Count());
+                HttpContext.Session.SetInt32("shoppingCart", await _db.Carts.Where(c => c.UserID == identity.Value).CountAsync());
             }
             IEnumerable<Product> productList = _db.Products;
             return View(productList);

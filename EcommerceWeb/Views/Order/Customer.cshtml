@@ -1,0 +1,49 @@
+﻿@model List<Order>
+@{
+    ViewData["Title"] = "Customer Order Management";
+}
+
+@foreach (var order in Model)
+{
+    <div class="container mt-2">
+        <h4>Order Number : @order.ID</h4>
+        <hr />
+        <table class="table table-hover">
+            <theard>
+                <tr class="table-light">
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Subtotal</th>
+                </tr>
+            </theard>
+            <tbody>
+                @foreach (var orderDetail in order.OrderDetails)
+                {
+                    <tr>
+                        <td scope="row">@orderDetail.Product.Name</td>
+                        <td>@orderDetail.Quantity</td>
+                        <td>@orderDetail.Price</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <hr />
+        <div>
+            Name : @order.Name
+        </div>
+        <div>
+            Phone : @order.Phone
+        </div>
+        <div>
+            Address : @order.Address
+        </div>
+        <div>
+            Total : @order.Total
+        </div>
+    </div>
+}
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+ 
+}

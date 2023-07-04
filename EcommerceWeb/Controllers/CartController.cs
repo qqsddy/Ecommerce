@@ -62,7 +62,7 @@ namespace EcommerceWeb.Controllers
             string userID = GetUserId();
 
             // Check if the product already exists in the cart
-            Cart cartFromDb = await _db.Carts.SingleOrDefaultAsync(c => c.UserID == userID && c.ProductID == Id);
+            Cart cartFromDb = await _db.Carts.SingleOrDefaultAsync(c => c.UserID == userID && c.ProductID == id);
 
             if (cartFromDb != null)
             {
