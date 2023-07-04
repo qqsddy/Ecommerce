@@ -17,20 +17,24 @@ namespace EcommerceWeb.Controllers
         {
             _db = db;
         }
-        public IActionResult Checkout()
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            List<Cart> cartFromDb = _db.Carts
+        /// <summary>
+        /// Displays the checkout page for the user.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Checkout()
+        {
+            string userID = GetUserId();
+
+            List<Cart> cartFromDb = await _db.Carts
                 .Include(c => c.Product)
-                .Where(c => c.UserID == userId)
-                .ToList();
+                .Where(c => c.UserID == userID)
+                .ToListAsync();
 
             var viewModel = new CartOrderViewModel
             {
                 Carts = cartFromDb,
-                Order = new Models.Order()
+                Order = new Order()
             };
 
             decimal total = cartFromDb.Sum(c => c.Subtotal);
@@ -39,67 +43,54 @@ namespace EcommerceWeb.Controllers
             return View(viewModel);
         }
 
+        /// <summary>
+        /// Handles the submission of the order and saves it to the database.
+        /// </summary>
+        /// <param name="order"></param>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult OrderConfirmation(Order order)
+        public async Task<IActionResult> OrderConfirmation(Order order)
         {
-            if (!ModelState.IsValid)
-            {
-                // Retrieve all error messages from ModelState
-                var errorMessages = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage);
-
-                // Log or display the error messages
-                foreach (var errorMessage in errorMessages)
-                {
-                    // Log the error or display it to the user
-                    Debug.WriteLine(errorMessage);
-                }
-
-                // Return the view with the updated model
-                return View(order);
-            }
-
             if (ModelState.IsValid)
             {
-                var claimsIdentity = (ClaimsIdentity)User.Identity;
-                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                string userID = GetUserId();
 
-                List<Cart> cartFromDb = _db.Carts
+                List<Cart> cartFromDb = await _db.Carts
                     .Include(c => c.Product)
-                    .Where(c => c.UserID == userId)
-                    .ToList();
+                    .Where(c => c.UserID == userID)
+                    .ToListAsync();
 
                 decimal total = cartFromDb.Sum(c => c.Subtotal);
 
-                order.UserID = userId;
+                // Sets the necessary properties for the order
+                // and adds the order to the database
+                order.UserID = userID;
                 order.PaymentStatus = "Pending";
                 order.Status = "Pending";
                 order.Total = total;
-                _db.Orders.Add(order);
-                _db.SaveChanges();
 
-                foreach (var cart in cartFromDb)
+                _db.Orders.Add(order);
+                await _db.SaveChangesAsync();
+
+                // Creates the order details from the cart items
+                var orderDetails = cartFromDb.Select(cart => new OrderDetail
                 {
-                    OrderDetail orderdetail = new()
-                    {
-                        OrderID = order.ID,
-                        ProductID = cart.ProductID,
-                        Quantity = cart.Quantity,
-                        Price = cart.Product.Price
-                    };
-                    _db.OrderDetails.Add(orderdetail);
-                    _db.SaveChanges();
-                }
+                    OrderID = order.ID,
+                    ProductID = cart.ProductID,
+                    Quantity = cart.Quantity,
+                    Price = cart.Product.Price
+                }).ToList();
+
+                _db.OrderDetails.AddRange(orderDetails);
+                await _db.SaveChangesAsync();
 
                 var viewModel = new CartOrderViewModel
                 {
                     Carts = cartFromDb,
-                    Order = new Models.Order()
+                    Order = new Order()
                 };
-                List<OrderDetail> orderDetails = _db.OrderDetails.Where(o => o.OrderID == order.ID).ToList();
-                ViewBag.orderDetails = orderDetails;
+                List<OrderDetail> orderDetail = await _db.OrderDetails.Where(o => o.OrderID == order.ID).ToListAsync();
+                ViewBag.orderDetails = orderDetail;
 
                 return View(order);
             }
@@ -107,15 +98,20 @@ namespace EcommerceWeb.Controllers
             return View("Checkout");
         }
 
-        //Get
-        public IActionResult Payment(int? orderID, bool isSuccess)
+        /// <summary>
+        /// Handles the payment confirmation and updates the payment status of the order.
+        /// </summary>
+        /// <param name="orderID"></param>
+        /// <param name="isSuccess"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Payment(int? orderID, bool isSuccess)
         {
             if(orderID == null)
             {
                 return NotFound();
             }
 
-            var order = _db.Orders.Find(orderID);
+            var order = await _db.Orders.FindAsync(orderID);
 
             if (order == null)
             {
@@ -126,21 +122,29 @@ namespace EcommerceWeb.Controllers
             {
                 order.PaymentStatus = "Approved";
                 _db.Orders.Update(order);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
             }
 
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string userID = GetUserId();
 
             HttpContext.Session.Clear();
             var cartsToRemove = _db.Carts.Where(c => c.UserID == userID);
             _db.Carts.RemoveRange(cartsToRemove);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             ViewBag.isSuccess = isSuccess;
 
             return View(order);
+        }
+
+        /// <summary>
+        /// Retrieves the ID of the current user.
+        /// </summary>
+        private string GetUserId()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            return claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
     }
 }
