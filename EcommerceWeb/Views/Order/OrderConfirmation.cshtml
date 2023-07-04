@@ -1,0 +1,84 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container mt-2">
+    <h4>Order Number : @Model.ID</h4>
+    <hr />
+    <table class="table table-hover">
+            <theard>
+                <tr class ="table-light">
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Subtotal</th>
+                </tr>
+            </theard>
+            <tbody>
+            @foreach (var orderDetail in ViewBag.orderDetails)
+                {
+                    <tr>
+                        <td scope="row">@orderDetail.Product.Name</td>
+                        <td>@orderDetail.Quantity</td>
+                        <td>@orderDetail.Price</td>
+                    </tr>
+                }
+            </tbody>
+    </table>
+    <hr />
+    <div>
+        Name : @Model.Name
+    </div>
+    <div>
+        Phone : @Model.Phone
+    </div>
+    <div>
+        Address : @Model.Address
+    </div>
+    <div>
+        Total : @Model.Total
+    </div>
+    <div>
+        <div id="paypal-button-container"></div>
+    </div>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://www.paypal.com/sdk/js?client-id=Ac31-cqRapDzqg2Ys4n5ly5OvXJmZGm8h7diwMHUS-JqYTlum81xCPxjxVT192Wqf-TyL0Ub8sP1PYAX&components=buttons&currency=TWD"></script>
+    <script>
+        paypal.Buttons({
+            style: {
+                disableMaxWidth: true
+            },
+        });
+
+        paypal.Buttons({
+            // Set up the transaction
+            createOrder: function (data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            "currency_code": "TWD",
+                            "value": @Model.Total
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction
+            onApprove: function (data, actions) {
+                return actions.order.capture().then(function (details) {
+                    console.log(details),
+                        window.location.
+                            replace("/order/payment/?orderID=@Model.ID&isSuccess=true");
+                })
+            },
+
+            onCancel: function (data) {
+                window.location.
+                    replace("/order/payment/?orderID=@Model.ID&isSussess=false");
+            }
+        }).render('#paypal-button-container');
+    </script>
+}

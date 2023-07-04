@@ -41,7 +41,7 @@ namespace EcommerceWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ConfirmedOrder(Order order)
+        public IActionResult OrderConfirmation(Order order)
         {
             if (!ModelState.IsValid)
             {
@@ -71,9 +71,12 @@ namespace EcommerceWeb.Controllers
                     .Where(c => c.UserID == userId)
                     .ToList();
 
+                decimal total = cartFromDb.Sum(c => c.Subtotal);
+
                 order.UserID = userId;
                 order.PaymentStatus = "Pending";
                 order.Status = "Pending";
+                order.Total = total;
                 _db.Orders.Add(order);
                 _db.SaveChanges();
 
@@ -105,7 +108,7 @@ namespace EcommerceWeb.Controllers
         }
 
         //Get
-        /*public IActionResult ConfirmedOrder(int? orderID)
+        public IActionResult Payment(int? orderID, bool isSuccess)
         {
             if(orderID == null)
             {
@@ -113,10 +116,31 @@ namespace EcommerceWeb.Controllers
             }
 
             var order = _db.Orders.Find(orderID);
-            var orderDetails = _db.OrderDetails.Where(o => o.OrderID == orderID).ToList();
-            ViewBag.orderDetails = orderDetails;
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+            
+            if (isSuccess)
+            {
+                order.PaymentStatus = "Approved";
+                _db.Orders.Update(order);
+                _db.SaveChanges();
+
+            }
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            HttpContext.Session.Clear();
+            var cartsToRemove = _db.Carts.Where(c => c.UserID == userID);
+            _db.Carts.RemoveRange(cartsToRemove);
+            _db.SaveChanges();
+
+            ViewBag.isSuccess = isSuccess;
 
             return View(order);
-        }*/
+        }
     }
 }

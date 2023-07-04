@@ -33,8 +33,17 @@
         <div class="d-flex justify-content-end">            
             <h3>$@ViewBag.Total</h3>
         </div>
-        <div class="d-flex justify-content-end">
-            <a class="btn btn-info" asp-controller="Order" asp-action="Checkout">Buy Now</a>
-        </div>
+        @if (Model.Count > 0)
+        {
+            <div class="d-flex justify-content-end">
+                <a class="btn btn-info" asp-controller="Order" asp-action="Checkout">Buy Now</a>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex justify-content-end">
+                <a class="btn btn-info" asp-controller="Home" asp-action="Index">Keep shopping</a>
+            </div>
+        }
     </div>
 </div>

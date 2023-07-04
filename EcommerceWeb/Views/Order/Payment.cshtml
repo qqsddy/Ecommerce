@@ -1,0 +1,17 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Checkout";
+}
+<div class="container mt-2">
+    <h4>Order Number : @Model.ID</h4>
+    <hr />
+    @if (@ViewBag.isSuccess == true)
+    {
+        <h5>Payment Successful</h5>
+    }
+    else
+    {
+        <h5>Payment Failed, Try it Later</h5>
+    }
+    
+</div>
