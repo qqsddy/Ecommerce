@@ -43,16 +43,16 @@ namespace EcommerceWeb.Controllers
         /// <summary>
         /// Adds a product to the cart for the current user.
         /// </summary>
-        /// <param name="productID"></param>
+        /// <param name="id">ProductID</param>
         /// <returns>Redirects to the home page.</returns>
-        public async Task<IActionResult> AddtoCart(int? productID)
+        public async Task<IActionResult> AddtoCart(int? id)
         {
             
-            if (productID == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var product = await _db.Products.FindAsync(productID);
+            var product = await _db.Products.FindAsync(id);
             
             if (product == null)
             {
@@ -62,7 +62,7 @@ namespace EcommerceWeb.Controllers
             string userID = GetUserId();
 
             // Check if the product already exists in the cart
-            Cart cartFromDb = await _db.Carts.SingleOrDefaultAsync(c => c.UserID == userID && c.ProductID == productID);
+            Cart cartFromDb = await _db.Carts.SingleOrDefaultAsync(c => c.UserID == userID && c.ProductID == Id);
 
             if (cartFromDb != null)
             {
@@ -92,16 +92,16 @@ namespace EcommerceWeb.Controllers
         /// <summary>
         /// Removes a cart item for the current user.
         /// </summary>
-        /// <param name="cartID"></param>
+        /// <param name="Id">cartID</param>
         /// <returns>Redirects to the cart page.</returns>
-        public async Task<IActionResult> Delete(int? cartID)
+        public async Task<IActionResult> Delete(int? id)
         {
 
-            if (cartID == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var cart = await _db.Carts.FindAsync(cartID);
+            var cart = await _db.Carts.FindAsync(id);
 
             if (cart == null)
             {

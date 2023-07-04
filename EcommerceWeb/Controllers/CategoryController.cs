@@ -64,18 +64,18 @@ namespace EcommerceWeb.Controllers
         /// <summary>
         /// Displays the category edit form.
         /// </summary>
-        /// <param name="categoryID"></param>
+        /// <param name="id">categoryID</param>
         /// <returns>
         /// If the category ID is null or the category is not found, returns a "Not Found" response.
         /// Otherwise, displays the edit form for the specified category.
         /// </returns>
-        public async Task<IActionResult> Edit(int? categoryID) 
+        public async Task<IActionResult> Edit(int? id) 
         {
-            if (categoryID == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var category = await _db.Categories.FindAsync(categoryID);
+            var category = await _db.Categories.FindAsync(id);
 
             if (category == null)
             {
@@ -115,18 +115,18 @@ namespace EcommerceWeb.Controllers
         /// <summary>
         /// Displays the delete confirmation page for a category.
         /// </summary>
-        /// <param name="categoryID"></param>
+        /// <param name="id">categoryID</param>
         /// <returns>
         /// If the category ID is null or the category is not found, returns a "Not Found" page.
         /// Otherwise, retrieves the category from the database and displays the delete confirmation view.
         /// </returns>
-        public async Task<IActionResult> Delete(int? categoryID)
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (categoryID == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var category = await _db.Categories.FindAsync(categoryID);
+            var category = await _db.Categories.FindAsync(id);
 
             if (category == null)
             {
@@ -140,16 +140,16 @@ namespace EcommerceWeb.Controllers
         /// <summary>
         /// Handles the HTTP POST request to delete a category.
         /// </summary>
-        /// <param name="categoryID"></param>
+        /// <param name="id">categoryID</param>
         /// <returns>
         /// If the category is found, removes it from the database and redirects to the "Index" action.
         /// If the category is not found, returns a "Not Found" page.
         /// </returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePost(int? categoryID)
+        public async Task<IActionResult> DeletePost(int? id)
         {
-            var category = await _db.Categories.FindAsync(categoryID);
+            var category = await _db.Categories.FindAsync(id);
 
             if (category == null)
             {

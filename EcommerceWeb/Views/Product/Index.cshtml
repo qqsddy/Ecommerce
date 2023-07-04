@@ -31,8 +31,8 @@
                         <td>@product.Stock</td>
                         <td>@product.Category.Name</td>
                         <td class="d-flex justify-content-end">
-                            <a class="btn btn-primary me-2" asp-controller="Product" asp-action="Edit" asp-route-productID="@product.ID">Edit</a>
-                            <a class="btn btn-danger" asp-controller="Product" asp-action="Delete" asp-route-productID="@product.ID">Delete</a>
+                            <a class="btn btn-primary me-2" asp-controller="Product" asp-action="Edit" asp-route-id="@product.ID">Edit</a>
+                            <a class="btn btn-danger" asp-controller="Product" asp-action="Delete" asp-route-id="@product.ID">Delete</a>
                         </td>
                     </tr>
                 }
